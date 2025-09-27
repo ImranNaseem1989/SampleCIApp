@@ -1,0 +1,36 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Select Xcode version (example: Xcode 15.4)
+      - name: Select Xcode version
+        run: sudo xcode-select -s "/Applications/Xcode_15.4.app"
+
+      # Step 3: Build app
+      - name: Build app
+        run: xcodebuild -scheme SampleCIApp -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15' build
+
+      # Step 4: Run tests
+      - name: Run tests
+        run: xcodebuild test -scheme SampleCIApp -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15'
+
+      # Step 5: Upload test results (artifacts)
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcode-test-results
+          path: ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
+
