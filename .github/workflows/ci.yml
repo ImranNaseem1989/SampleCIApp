@@ -8,30 +8,37 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Xcode
+      - name: Set up Xcode 16.2
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.0'   # 👈 use Xcode 16 instead of 15.4
+          xcode-version: '16.2.0'
+
+      - name: List available simulators
+        run: xcrun simctl list devices
 
       - name: Build app
         run: |
+          DEST=$(xcrun simctl list devices available | grep -m 1 "iPhone" | awk -F '[()]' '{print $2}')
+          echo "Using destination: $DEST"
           xcodebuild \
             -scheme SampleCIApp \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' \
+            -destination "id=$DEST" \
             clean build
 
       - name: Run tests
         run: |
+          DEST=$(xcrun simctl list devices available | grep -m 1 "iPhone" | awk -F '[()]' '{print $2}')
+          echo "Using destination: $DEST"
           xcodebuild \
             -scheme SampleCIApp \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' \
+            -destination "id=$DEST" \
             test
 
