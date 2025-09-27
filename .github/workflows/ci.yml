@@ -19,19 +19,26 @@ jobs:
         with:
           xcode-version: '16.0'
 
+      - name: List available simulators
+        run: xcrun simctl list devices
+
       - name: Build app
         run: |
+          DEST=$(xcrun simctl list devices available | grep -m 1 "iPhone" | awk -F '[()]' '{print $2}')
+          echo "Using destination: $DEST"
           xcodebuild \
             -scheme SampleCIApp \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.0' \
+            -destination "id=$DEST" \
             clean build
 
       - name: Run tests
         run: |
+          DEST=$(xcrun simctl list devices available | grep -m 1 "iPhone" | awk -F '[()]' '{print $2}')
+          echo "Using destination: $DEST"
           xcodebuild \
             -scheme SampleCIApp \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.0' \
+            -destination "id=$DEST" \
             test
 
