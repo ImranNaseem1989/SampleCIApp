@@ -19,7 +19,8 @@ final class SampleCIAppTests: XCTestCase {
     }
     
     func testAddition() {
-        let result = MathHelper.add(2, 3)
-        XCTAssertEqual(result, 5, "2 + 3 should equal 5")
+        let helper = MathHelper()
+        let result = helper.addNumbers(firstNumber: 2, secondNumber: 3)
+        XCTAssertEqual(result, 5)
     }
 }
